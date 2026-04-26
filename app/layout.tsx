@@ -11,12 +11,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <div className="flex min-h-screen bg-[#0a0a0f]">
+      <body style={{ margin: 0, padding: 0 }}>
+        <div style={{ display: "flex", minHeight: "100vh" }}>
           <Sidebar />
-          <div className="flex-1 flex flex-col min-w-0 md:ml-60">
+          <div style={{ marginLeft: "240px", flex: 1, display: "flex", flexDirection: "column", minWidth: 0, width: "calc(100% - 240px)" }}>
             <Header />
-            <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+            <main style={{ flex: 1, overflowY: "auto", paddingBottom: "80px" }}>
               {children}
             </main>
           </div>
