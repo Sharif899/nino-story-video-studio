@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Project } from "@/lib/types";
 import Button from "@/components/ui/Button";
@@ -10,14 +10,9 @@ interface ProjectCardProps {
   onSelect?: (project: Project) => void;
 }
 
-export default function ProjectCard({
-  project,
-  onEdit,
-  onDelete,
-  onSelect,
-}: ProjectCardProps) {
+export default function ProjectCard({ project, onEdit, onDelete, onSelect }: ProjectCardProps) {
   return (
-    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 flex flex-col gap-4 hover:border-[var(--border-2)] transition-all duration-200 group">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 flex flex-col gap-4 hover:border-[var(--border-2)] transition-all duration-200">
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-lg overflow-hidden bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center flex-shrink-0">
           {project.logo ? (
@@ -34,10 +29,10 @@ export default function ProjectCard({
       <p className="text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed">{project.summary}</p>
       <div className="flex gap-2 flex-wrap">
         {project.docsUrl && (
-          <a href={project.docsUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--text-muted)] hover:text-violet-400 transition-colors flex items-center gap-1">Docs</a>
+          <a href={project.docsUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--text-muted)] hover:text-violet-400 transition-colors">Docs</a>
         )}
         {project.githubUrl && (
-          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--text-muted)] hover:text-violet-400 transition-colors flex items-center gap-1">GitHub</a>
+          <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--text-muted)] hover:text-violet-400 transition-colors">GitHub</a>
         )}
       </div>
       <div className="flex gap-2 pt-1 border-t border-[var(--border)]">
