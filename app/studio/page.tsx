@@ -1,151 +1,115 @@
 "use client";
 
-import { useState } from "react";
-import { Project, ContentMode, SmartConfig, GeneratedOutput } from "@/lib/types";
-import { generateStudioOutput } from "@/lib/generate";
-import { saveSession } from "@/lib/storage";
-import { generateId } from "@/lib/storage";
-import StudioForm from "@/components/studio/StudioForm";
-import OutputPanel from "@/components/studio/OutputPanel";
+import { useState, useEffect } from "react";
+import Button from "@/components/ui/Button";
 
-export default function StudioPage() {
-  const [loading, setLoading] = useState(false);
-  const [output, setOutput] = useState<GeneratedOutput | null>(null);
-  const [currentMode, setCurrentMode] = useState<ContentMode>("Explainer");
-  const [currentSmartConfig, setCurrentSmartConfig] = useState<SmartConfig>({
-    storyStructure: "",
-    tone: "",
-    visualStyle: "",
-    videoLength: "",
-    characterSetup: "",
-  });
-  const [error, setError] = useState("");
+export default function SettingsPage() {
+  const [key, setKey] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
 
-  const handleGenerate = async (
-    project: Project,
-    topic: string,
-    mode: ContentMode,
-    smartConfig: SmartConfig
-  ) => {
-    setLoading(true);
-    setError("");
-    setOutput(null);
-    setCurrentMode(mode);
-    setCurrentSmartConfig(smartConfig);
+  useEffect(() => {
+    const stored = localStorage.getItem("nino_api_key") || "";
+    setHasKey(!!stored);
+    setKey(stored);
+  }, []);
 
-    try {
-      const result = await generateStudioOutput(
-        project,
-        topic,
-        mode,
-        smartConfig
-      );
-      setOutput(result);
+  const handleSave = () => {
+    localStorage.setItem("nino_api_key", key.trim());
+    setHasKey(true);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
-      saveSession({
-        projectId: project.id,
-        topic,
-        mode,
-        smartConfig,
-        output: result,
-        createdAt: new Date().toISOString(),
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
+  const handleClear = () => {
+    localStorage.removeItem("nino_api_key");
+    setKey("");
+    setHasKey(false);
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left — Form */}
-          <div className="flex flex-col gap-4">
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">
-              <h2 className="text-base font-semibold text-[var(--text-primary)] mb-1">
-                Video Studio
-              </h2>
-              <p className="text-xs text-[var(--text-muted)] mb-6">
-                Configure your video concept and generate AI-powered content
-              </p>
-              <StudioForm
-                onGenerate={handleGenerate}
-                loading={loading}
-              />
+    <div style={{ padding: "32px 28px", maxWidth: "600px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <h2 style={{ fontSize: "22px", fontWeight: "700", color: "#f1f0ff", marginBottom: "6px" }}>Settings</h2>
+        <p style={{ fontSize: "13px", color: "#4a4a6a" }}>Configure your Anthropic API key for AI generation</p>
+      </div>
+
+      <div style={{
+        background: "#0c0c12", border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: "20px", padding: "28px",
+        display: "flex", flexDirection: "column", gap: "20px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{
+            width: "40px", height: "40px", borderRadius: "12px",
+            background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px",
+          }}>🔑</div>
+          <div>
+            <div style={{ fontSize: "14px", fontWeight: "600", color: "#f1f0ff" }}>Anthropic API Key</div>
+            <div style={{ fontSize: "11px", color: "#4a4a6a", marginTop: "2px" }}>
+              Stored locally on your device only. Never sent to GitHub.
             </div>
           </div>
+          {hasKey && (
+            <div style={{
+              marginLeft: "auto", fontSize: "11px", color: "#10b981",
+              padding: "3px 10px", borderRadius: "20px",
+              background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)",
+            }}>✓ Active</div>
+          )}
+        </div>
 
-          {/* Right — Output */}
-          <div className="flex flex-col gap-4">
-            {loading && (
-              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-12 flex flex-col items-center justify-center gap-4">
-                <div className="relative w-12 h-12">
-                  <div className="absolute inset-0 rounded-full border-2 border-violet-600/20" />
-                  <div className="absolute inset-0 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-[var(--text-primary)]">
-                    Generating your video concept...
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">
-                    This takes a few seconds
-                  </p>
-                </div>
-              </div>
-            )}
+        <input
+          type="password"
+          value={key}
+          onChange={e => setKey(e.target.value)}
+          placeholder="sk-ant-api03-..."
+          style={{
+            width: "100%", padding: "12px 16px",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "12px", fontSize: "13px",
+            color: "#f1f0ff", fontFamily: "'JetBrains Mono', monospace",
+          }}
+        />
 
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 text-center">
-                <p className="text-sm text-red-400">{error}</p>
-              </div>
-            )}
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            onClick={handleSave}
+            style={{
+              flex: 1, padding: "11px",
+              background: saved ? "rgba(16,185,129,0.2)" : "linear-gradient(135deg, #7c3aed, #5b21b6)",
+              color: saved ? "#10b981" : "white",
+              border: saved ? "1px solid rgba(16,185,129,0.3)" : "none",
+              borderRadius: "10px", fontSize: "13px", fontWeight: "700",
+              cursor: "pointer", transition: "all 0.2s ease",
+              fontFamily: "inherit",
+            }}
+          >
+            {saved ? "✓ Saved!" : "Save API Key"}
+          </button>
+          {hasKey && (
+            <button
+              onClick={handleClear}
+              style={{
+                padding: "11px 20px",
+                background: "rgba(244,63,94,0.1)",
+                color: "#f43f5e",
+                border: "1px solid rgba(244,63,94,0.2)",
+                borderRadius: "10px", fontSize: "13px", fontWeight: "600",
+                cursor: "pointer", fontFamily: "inherit",
+              }}
+            >Clear</button>
+          )}
+        </div>
 
-            {output && !loading && (
-              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">
-                <OutputPanel
-                  output={output}
-                  mode={currentMode}
-                  smartConfig={currentSmartConfig}
-                />
-              </div>
-            )}
-
-            {!output && !loading && !error && (
-              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-12 flex flex-col items-center justify-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-violet-600/10 border border-violet-600/20 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-violet-400"
-                  >
-                    <polygon points="23 7 16 12 23 17 23 7" />
-                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                  </svg>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-[var(--text-primary)]">
-                    Your output will appear here
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Fill in the form and click Generate
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+        <div style={{
+          padding: "12px 16px", borderRadius: "10px",
+          background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
+          fontSize: "12px", color: "#4a4a6a", lineHeight: "1.6",
+        }}>
+          Get your API key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style={{ color: "#8b5cf6" }}>console.anthropic.com</a>
         </div>
       </div>
     </div>
