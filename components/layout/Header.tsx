@@ -2,40 +2,48 @@
 
 import { usePathname } from "next/navigation";
 
-const pageTitles: Record<string, { title: string; description: string }> = {
-  "/": {
-    title: "Dashboard",
-    description: "Welcome to Nino Story Video Studio",
-  },
-  "/projects": {
-    title: "Projects",
-    description: "Manage your crypto and AI projects",
-  },
-  "/studio": {
-    title: "Video Studio",
-    description: "Generate AI video concepts and scripts",
-  },
+const pages: Record<string, { title: string; sub: string }> = {
+  "/": { title: "Dashboard", sub: "Welcome to Nino Story Video Studio" },
+  "/projects": { title: "Projects", sub: "Manage your crypto & AI projects" },
+  "/studio": { title: "Video Studio", sub: "Generate AI video concepts and scripts" },
+  "/settings": { title: "Settings", sub: "Configure your API key and preferences" },
 };
 
 export default function Header() {
   const pathname = usePathname();
-  const page = pageTitles[pathname] || pageTitles["/"];
+  const page = pages[pathname] || pages["/"];
 
   return (
-    <header className="h-16 border-b border-[var(--border)] bg-[var(--surface)] flex items-center px-6 gap-4">
-      <div className="flex-1">
-        <h1 className="text-base font-semibold text-[var(--text-primary)]">
+    <header style={{
+      height: "64px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      background: "rgba(6,6,8,0.9)",
+      backdropFilter: "blur(20px)",
+      display: "flex",
+      alignItems: "center",
+      padding: "0 28px",
+      gap: "16px",
+      position: "sticky",
+      top: 0,
+      zIndex: 40,
+    }}>
+      <div style={{ flex: 1 }}>
+        <h1 style={{ fontSize: "15px", fontWeight: "600", color: "#f1f0ff", lineHeight: 1.2 }}>
           {page.title}
         </h1>
-        <p className="text-xs text-[var(--text-muted)]">{page.description}</p>
+        <p style={{ fontSize: "11px", color: "#4a4a6a", marginTop: "2px" }}>{page.sub}</p>
       </div>
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600/10 border border-violet-600/20">
-          <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-          <span className="text-xs text-violet-400 font-medium">
-            Smart Mode ON
-          </span>
-        </div>
+      <div style={{
+        display: "flex", alignItems: "center", gap: "6px",
+        padding: "6px 12px", borderRadius: "20px",
+        background: "rgba(139,92,246,0.1)",
+        border: "1px solid rgba(139,92,246,0.2)",
+      }}>
+        <div style={{
+          width: "6px", height: "6px", borderRadius: "50%",
+          background: "#8b5cf6", boxShadow: "0 0 8px #8b5cf6",
+        }} />
+        <span style={{ fontSize: "11px", color: "#8b5cf6", fontWeight: "600" }}>Smart Mode ON</span>
       </div>
     </header>
   );
