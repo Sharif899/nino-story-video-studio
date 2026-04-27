@@ -1,6 +1,5 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
-
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   --bg: #060608;
@@ -98,7 +97,6 @@ body::after {
 }
 
 .animate-fade-up { animation: fadeUp 0.4s ease-out forwards; }
-
 textarea, input, select { outline: none; font-family: inherit; }
 button { cursor: pointer; font-family: inherit; }
 a { text-decoration: none; }
